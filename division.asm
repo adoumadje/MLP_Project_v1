@@ -1,28 +1,32 @@
 SYS_EXIT equ 1
-SYS_WRITE equ 4
 SYS_READ equ 3
+SYS_WRITE equ 4
 STDIN equ 0
 STDOUT equ 1
 
 section .data
-    msg1 db "num1 = "
+
+    msg1 db "dividend = "
     len1 equ $ - msg1
 
-    msg2 db "num2 = "
+    msg2 db "divisor = "
     len2 equ $ - msg2
 
-    msg3 db "num1 - num2 = "
+    msg3 db "quotient = "
     len3 equ $ - msg3
 
 section .bss
-    dividend resb 2
-    divisor resb 2
-    quotient resb 1
+
+    num1 resb 2
+    num2 resb 2
+    res resb 1
 
 section .text
+
     global _start       ;must be declared for using gcc
 
 _start:                 ;tell linker entry point
+
     mov eax, SYS_WRITE
     mov ebx, STDOUT
     mov ecx, msg1
@@ -31,7 +35,7 @@ _start:                 ;tell linker entry point
 
     mov eax, SYS_READ
     mov ebx, STDIN
-    mov ecx, dividend
+    mov ecx, num1
     mov edx, 2
     int 0x80
 
@@ -43,7 +47,7 @@ _start:                 ;tell linker entry point
 
     mov eax, SYS_READ
     mov ebx, STDIN
-    mov ecx, divisor
+    mov ecx, num2
     mov edx, 2
     int 0x80
 
@@ -53,20 +57,20 @@ _start:                 ;tell linker entry point
     mov edx, len3
     int 0x80
 
-    mov eax, [dividend]
-    sub eax, '0'
+    mov al, [num1]
+    sub al, '0'
 
-    mov ebx, [divisor]
-    sub ebx, '0'
+    mov bl, [num2]
+    sub bl, '0'
 
-    sub eax, ebx
-    add eax, '0'
+    div bl
+    add al, '0'
 
-    mov [quotient], eax
+    mov [res], al
 
     mov eax, SYS_WRITE
     mov ebx, STDOUT
-    mov ecx, quotient
+    mov ecx, res
     mov edx, 1
     int 0x80
 
